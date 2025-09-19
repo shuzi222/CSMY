@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>冥酱的计算器</title>
+    <link rel="icon" href="TB.jpg" type="image/jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-dark: #171a21;
+            --primary: #1b2838;
+            --primary-light: #2a475e;
+            --accent: #66c0f4;
+            --accent-light: #8cd5ff;
+            --text-primary: #dcdedf;
+            --text-secondary: #8f98a0;
+            --success: #5c7e10;
+            --warning: #e0ae2c;
+            --danger: #b44040;
+            --card-bg: #2c3b4b;
+            --input-bg: #3d4450;
+            --border-color: #4e5d6b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(26, 39, 53, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            color: var(--accent-light);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        @media (min-width: 992px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        input,
+        select,
+        button,
+        textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(102, 192, 244, 0.3);
+        }
+
+        button {
+            background: linear-gradient(to right, var(--primary-light), var(--primary));
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            padding: 14px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            background: linear-gradient(to right, var(--accent), var(--accent-light));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.primary {
+            background: linear-gradient(to right, var(--primary-light), var(--accent));
+        }
+
+        button.success {
+            background: linear-gradient(to right, var(--success), #78a122);
+        }
+
+        button.danger {
+            background: linear-gradient(to right, var(--danger), #d05454);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(102, 192, 244, 0.1);
+            border-radius: 8px;
+            border-left: 5px solid var(--accent);
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .saved-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .saved-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .saved-card-title {
+            font-weight: bold;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        .delete-card {
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 20px;
+            cursor: pointer;
+            width: auto;
+            padding: 0 8px;
+        }
+
+        .saved-card-content {
+            margin-bottom: 15px;
+        }
+
+        .saved-card-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .tab {
+            padding: 14px 25px;
+            cursor: pointer;
+            background-color: var(--primary);
+            margin-right: 5px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background-color: var(--card-bg);
+            border-bottom: 3px solid var(--accent);
+            color: var(--accent-light);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .input-row .input-group {
+            flex: 1;
+        }
+
+        .manual-input {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .item-list {
+            margin-top: 15px;
+        }
+
+        .item-input {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .item-input input {
+            flex: 1;
+        }
+
+        .remove-item {
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 5px 10px;
+        }
+
+        .add-item {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: var(--primary-light);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .icon {
+            margin-right: 10px;
+        }
+
+        .instructions {
+            background: rgba(102, 192, 244, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .instructions ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-calculator icon"></i>冥酱的计算器</h1>
+            <p>拒绝赌博，搬砖致富(</p>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="calculators"><i class="fas fa-calculator icon"></i>计算器</div>
+            <div class="tab" data-tab="saved-cards"><i class="fas fa-history icon"></i>历史记录</div>
+            <div class="tab" data-tab="instructions"><i class="fas fa-info-circle icon"></i>使用说明</div>
+        </div>
+
+        <div class="tab-content active" id="calculators">
+            <div class="grid">
+                <div class="card">
+                    <h2><i class="fas fa-money-bill-wave icon"></i>倒余额计算</h2>
+                    <div class="input-group">
+                        <label for="steam-price"><i class="fas fa-tag icon"></i>Steam 价格 (元)</label>
+                        <input type="number" id="steam-price" placeholder="输入Steam市场价" min="0" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label for="purchase-cost"><i class="fas fa-money-bill icon"></i>购买成本 (元)</label>
+                        <input type="number" id="purchase-cost" placeholder="输入购买成本" min="0" step="0.01">
+                    </div>
+                    <button id="calculate-balance" class="primary"><i class="fas fa-calculator icon"></i>计算折扣率</button>
+
+                    <div class="result" id="balance-result" style="display: none;">
+                        <h3>计算结果</h3>
+                        <div class="stats">
+                            <div class="stat-box">
+                                <div class="stat-label">Steam余额价值</div>
+                                <div class="stat-value" id="steam-balance-value">0.00</div>
+                                <div class="stat-label">元</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">折扣率</div>
+                                <div class="stat-value" id="discount-rate-value">0.00</div>
+                                <div class="stat-label">%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="margin-top: 20px;">
+                        <label for="balance-label"><i class="fas fa-tag icon"></i>自定义标签</label>
+                        <input type="text" id="balance-label" placeholder="为结果添加标签">
+                    </div>
+                    <button id="save-balance" class="success"><i class="fas fa-save icon"></i>保存结果</button>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fas fa-dice icon"></i>武库通行证抽奖计算</h2>
+
+                    <div class="input-group">
+                        <label for="point-value"><i class="fas fa-coins icon"></i>1点数的价值 (元)</label>
+                        <input type="number" id="point-value" placeholder="输入1点数的价值" min="0" step="0.01">
+                    </div>
+
+                    <h3><i class="fas fa-upload icon"></i>数据输入方式</h3>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="json-file"><i class="fas fa-file-import icon"></i>上传JSON文件</label>
+                            <input type="file" id="json-file" accept=".json">
+                        </div>
+                        <div class="input-group">
+                            <label for="data-type"><i class="fas fa-choose icon"></i>或选择手动输入</label>
+                            <select id="data-type">
+                                <option value="manual">手动输入价格</option>
+                                <option value="file">从文件导入</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="manual-input" id="manual-input">
+                        <h3><i class="fas fa-keyboard icon"></i>手动输入物品价格</h3>
+
+                        <div class="input-group">
+                            <label>高级物品价格 (6种)</label>
+                            <div class="item-list" id="advanced-items">
+                                <!-- 动态生成输入框 -->
+                            </div>
+                            <div class="add-item" id="add-advanced"><i class="fas fa-plus icon"></i>添加高级物品</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>卓越物品价格 (6种)</label>
+                            <div class="item-list" id="superior-items">
+                                <!-- 动态生成输入框 -->
+                            </div>
+                            <div class="add-item" id="add-superior"><i class="fas fa-plus icon"></i>添加卓越物品</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>奇异物品价格 (3种)</label>
+                            <div class="item-list" id="exceptional-items">
+                                <!-- 动态生成输入框 -->
+                            </div>
+                            <div class="add-item" id="add-exceptional"><i class="fas fa-plus icon"></i>添加奇异物品</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>非凡物品价格 (2种)</label>
+                            <div class="item-list" id="extraordinary-items">
+                                <!-- 动态生成输入框 -->
+                            </div>
+                            <div class="add-item" id="add-extraordinary"><i class="fas fa-plus icon"></i>添加非凡物品</div>
+                        </div>
+                    </div>
+
+                    <button id="calculate-lottery" class="primary"><i class="fas fa-calculator icon"></i>计算收益率</button>
+
+                    <div class="result" id="lottery-result" style="display: none;">
+                        <h3>计算结果</h3>
+                        <div class="stats">
+                            <div class="stat-box">
+                                <div class="stat-label">期望价值</div>
+                                <div class="stat-value" id="expected-value">0.00</div>
+                                <div class="stat-label">元/次</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">抽奖成本</div>
+                                <div class="stat-value" id="lottery-cost">0.00</div>
+                                <div class="stat-label">元/次</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">收益率</div>
+                                <div class="stat-value" id="lottery-roi">0.00</div>
+                                <div class="stat-label">%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="margin-top: 20px;">
+                        <label for="lottery-label"><i class="fas fa-tag icon"></i>自定义标签</label>
+                        <input type="text" id="lottery-label" placeholder="为结果添加标签">
+                    </div>
+                    <button id="save-lottery" class="success"><i class="fas fa-save icon"></i>保存结果</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="saved-cards">
+            <div class="card">
+                <h2><i class="fas fa-history icon"></i>已保存的计算结果</h2>
+                <div class="cards-container" id="cards-container">
+                    <!-- 卡片将在这里动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="instructions">
+            <div class="card">
+                <h2><i class="fas fa-info-circle icon"></i>使用说明</h2>
+
+                <div class="instructions">
+                    <h3><i class="fas fa-money-bill-wave icon"></i>箱子倒余额计算</h3>
+                    <p>此功能用于计算通过购买和出售Steam物品来获得Steam钱包余额的折扣率。</p>
+                    <ul>
+                        <li><strong>Steam价格</strong>: 物品在Steam市场上的售价（人民币）</li>
+                        <li><strong>购买成本</strong>: 您购买该物品的实际花费（人民币）</li>
+                        <li>计算公式: <code>折扣率 = (购买成本 ÷ (Steam价格 × 0.8697)) × 100%</code></li>
+                        <li>Steam会收取15.3%的交易手续费，因此实际到手金额为售价的84.03%</li>
+                        <li>折扣率表示您实际花费相对于获得的Steam余额的百分比</li>
+                    </ul>
+                </div>
+
+                <div class="instructions">
+                    <h3><i class="fas fa-dice icon"></i>武库通行证抽奖计算</h3>
+                    <p>此功能用于计算武库通行证中迷链挂件抽奖的期望收益率。</p>
+                    <ul>
+                        <li><strong>点数价值</strong>: 获取1点数所需的实际成本（人民币）</li>
+                        <li><strong>物品价格</strong>: 可以通过手动输入或JSON文件导入各等级物品的价格</li>
+                        <li>各等级物品的掉落概率:
+                            <ul>
+                                <li>高级: 80.128%</li>
+                                <li>卓越: 16.026%</li>
+                                <li>奇异: 3.205%</li>
+                                <li>非凡: 0.641%</li>
+                            </ul>
+                        </li>
+                        <li>计算公式: <code>期望价值 = Σ(各等级概率 × 该等级平均价格)</code></li>
+                        <li>每次抽奖消耗3点数，收益率 = (期望价值 - 3×点数价值) ÷ (3×点数价值) × 100%</li>
+                    </ul>
+                </div>
+
+                <div class="instructions">
+                    <h3><i class="fas fa-save icon"></i>保存结果</h3>
+                    <p>所有计算结果都可以添加自定义标签后保存，方便日后查看和比较。</p>
+                    <p>保存的数据会存储在您的浏览器本地，清除浏览器数据可能会导致保存的信息丢失。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 初始化手动输入框
+            initManualInput();
+
+            // 选项卡切换功能
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+
+                    // 更新活动选项卡
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+
+                    tab.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // 箱子倒余额计算功能 - 修改为计算折扣率
+            document.getElementById('calculate-balance').addEventListener('click', function () {
+                const steamPrice = parseFloat(document.getElementById('steam-price').value);
+                const purchaseCost = parseFloat(document.getElementById('purchase-cost').value);
+
+                if (isNaN(steamPrice) || isNaN(purchaseCost) || purchaseCost <= 0) {
+                    alert('请输入有效的数字！');
+                    return;
+                }
+
+                const steamBalance = steamPrice * 0.8697;
+                // 计算折扣率 = (购买成本 / Steam余额价值) * 100%
+                const discountRate = steamBalance > 0 ? (purchaseCost / steamBalance * 100).toFixed(2) : 0;
+
+                const resultElement = document.getElementById('balance-result');
+                const steamBalanceElement = document.getElementById('steam-balance-value');
+                const discountRateElement = document.getElementById('discount-rate-value');
+
+                steamBalanceElement.textContent = steamBalance.toFixed(2);
+                discountRateElement.textContent = discountRate;
+
+                resultElement.style.display = 'block';
+            });
+
+            // 保存箱子倒余额计算结果 - 修改为保存折扣率
+            document.getElementById('save-balance').addEventListener('click', function () {
+                const steamPrice = parseFloat(document.getElementById('steam-price').value);
+                const purchaseCost = parseFloat(document.getElementById('purchase-cost').value);
+                const label = document.getElementById('balance-label').value || '箱子倒余额计算';
+
+                if (isNaN(steamPrice) || isNaN(purchaseCost) || purchaseCost <= 0) {
+                    alert('请先计算有效的结果！');
+                    return;
+                }
+
+                const steamBalance = steamPrice * 0.8697;
+                // 计算折扣率 = (购买成本 / Steam余额价值) * 100%
+                const discountRate = steamBalance > 0 ? (purchaseCost / steamBalance * 100).toFixed(2) : 0;
+
+                const cardData = {
+                    type: 'balance',
+                    label: label,
+                    steamPrice: steamPrice,
+                    purchaseCost: purchaseCost,
+                    steamBalance: steamBalance,
+                    discountRate: discountRate,
+                    timestamp: new Date().toISOString()
+                };
+
+                saveCard(cardData);
+                alert('结果已保存！');
+            });
+
+            // 抽奖收益率计算功能
+            document.getElementById('calculate-lottery').addEventListener('click', function () {
+                const pointValue = parseFloat(document.getElementById('point-value').value);
+                const dataType = document.getElementById('data-type').value;
+
+                if (isNaN(pointValue) || pointValue <= 0) {
+                    alert('请输入有效的点数价值！');
+                    return;
+                }
+
+                let prices = {};
+
+                if (dataType === 'file') {
+                    const fileInput = document.getElementById('json-file');
+                    if (!fileInput.files.length) {
+                        alert('请上传JSON文件！');
+                        return;
+                    }
+
+                    const file = fileInput.files[0];
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        try {
+                            prices = JSON.parse(e.target.result);
+                            calculateLotteryResult(prices, pointValue);
+                        } catch (error) {
+                            alert('解析JSON文件时出错: ' + error.message);
+                        }
+                    };
+
+                    reader.readAsText(file);
+                } else {
+                    // 手动输入模式
+                    prices = getManualInputPrices();
+                    calculateLotteryResult(prices, pointValue);
+                }
+            });
+
+            // 从手动输入获取价格数据
+            function getManualInputPrices() {
+                const prices = {
+                    "高级": [],
+                    "卓越": [],
+                    "奇异": [],
+                    "非凡": []
+                };
+
+                // 获取高级物品价格
+                const advancedInputs = document.querySelectorAll('#advanced-items input');
+                advancedInputs.forEach(input => {
+                    if (input.value && !isNaN(parseFloat(input.value))) {
+                        prices["高级"].push(parseFloat(input.value));
+                    }
+                });
+
+                // 获取卓越物品价格
+                const superiorInputs = document.querySelectorAll('#superior-items input');
+                superiorInputs.forEach(input => {
+                    if (input.value && !isNaN(parseFloat(input.value))) {
+                        prices["卓越"].push(parseFloat(input.value));
+                    }
+                });
+
+                // 获取奇异物品价格
+                const exceptionalInputs = document.querySelectorAll('#exceptional-items input');
+                exceptionalInputs.forEach(input => {
+                    if (input.value && !isNaN(parseFloat(input.value))) {
+                        prices["奇异"].push(parseFloat(input.value));
+                    }
+                });
+
+                // 获取非凡物品价格
+                const extraordinaryInputs = document.querySelectorAll('#extraordinary-items input');
+                extraordinaryInputs.forEach(input => {
+                    if (input.value && !isNaN(parseFloat(input.value))) {
+                        prices["非凡"].push(parseFloat(input.value));
+                    }
+                });
+
+                return prices;
+            }
+
+            // 计算抽奖结果
+            function calculateLotteryResult(prices, pointValue) {
+                // 定义概率
+                const probabilities = {
+                    "高级": 0.80128,
+                    "卓越": 0.16026,
+                    "奇异": 0.03205,
+                    "非凡": 0.00641
+                };
+
+                // 计算每个等级的平均价格
+                const avgPrices = {};
+                for (const rank in prices) {
+                    if (prices[rank].length === 0) {
+                        avgPrices[rank] = 0;
+                    } else {
+                        avgPrices[rank] = prices[rank].reduce((a, b) => a + b, 0) / prices[rank].length;
+                    }
+                }
+
+                // 计算期望价值
+                let expectedValue = 0;
+                for (const rank in probabilities) {
+                    expectedValue += probabilities[rank] * avgPrices[rank];
+                }
+
+                // 计算收益率
+                const cost = 3 * pointValue;
+                const roi = ((expectedValue - cost) / cost * 100).toFixed(2);
+
+                const resultElement = document.getElementById('lottery-result');
+                const expectedValueElement = document.getElementById('expected-value');
+                const lotteryCostElement = document.getElementById('lottery-cost');
+                const lotteryRoiElement = document.getElementById('lottery-roi');
+
+                expectedValueElement.textContent = expectedValue.toFixed(2);
+                lotteryCostElement.textContent = cost.toFixed(2);
+                lotteryRoiElement.textContent = roi;
+
+                resultElement.style.display = 'block';
+            }
+
+            // 保存抽奖计算结果
+            document.getElementById('save-lottery').addEventListener('click', function () {
+                const pointValue = parseFloat(document.getElementById('point-value').value);
+                const label = document.getElementById('lottery-label').value || '抽奖收益率计算';
+                const dataType = document.getElementById('data-type').value;
+
+                if (isNaN(pointValue) || pointValue <= 0) {
+                    alert('请输入有效的点数价值！');
+                    return;
+                }
+
+                let prices = {};
+
+                if (dataType === 'file') {
+                    const fileInput = document.getElementById('json-file');
+                    if (!fileInput.files.length) {
+                        alert('请上传JSON文件！');
+                        return;
+                    }
+
+                    const file = fileInput.files[0];
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        try {
+                            prices = JSON.parse(e.target.result);
+                            saveLotteryResult(prices, pointValue, label);
+                        } catch (error) {
+                            alert('解析JSON文件时出错: ' + error.message);
+                        }
+                    };
+
+                    reader.readAsText(file);
+                } else {
+                    // 手动输入模式
+                    prices = getManualInputPrices();
+                    saveLotteryResult(prices, pointValue, label);
+                }
+            });
+
+            // 保存抽奖结果
+            function saveLotteryResult(prices, pointValue, label) {
+                // 定义概率
+                const probabilities = {
+                    "高级": 0.80128,
+                    "卓越": 0.16026,
+                    "奇异": 0.03205,
+                    "非凡": 0.00641
+                };
+
+                // 计算每个等级的平均价格
+                const avgPrices = {};
+                for (const rank in prices) {
+                    if (prices[rank].length === 0) {
+                        avgPrices[rank] = 0;
+                    } else {
+                        avgPrices[rank] = prices[rank].reduce((a, b) => a + b, 0) / prices[rank].length;
+                    }
+                }
+
+                // 计算期望价值
+                let expectedValue = 0;
+                for (const rank in probabilities) {
+                    expectedValue += probabilities[rank] * avgPrices[rank];
+                }
+
+                // 计算收益率
+                const cost = 3 * pointValue;
+                const roi = ((expectedValue - cost) / cost * 100).toFixed(2);
+
+                const cardData = {
+                    type: 'lottery',
+                    label: label,
+                    expectedValue: expectedValue,
+                    cost: cost,
+                    roi: roi,
+                    timestamp: new Date().toISOString()
+                };
+
+                saveCard(cardData);
+                alert('结果已保存！');
+            }
+
+            // 初始化手动输入框
+            function initManualInput() {
+                // 添加高级物品输入框
+                const addAdvancedBtn = document.getElementById('add-advanced');
+                const advancedContainer = document.getElementById('advanced-items');
+
+                addAdvancedBtn.addEventListener('click', function () {
+                    if (advancedContainer.children.length >= 6) {
+                        alert('高级物品最多只能添加6个');
+                        return;
+                    }
+
+                    const itemInput = document.createElement('div');
+                    itemInput.className = 'item-input';
+                    itemInput.innerHTML = `
+                        <input type="number" placeholder="物品价格" min="0" step="0.01">
+                        <span class="remove-item"><i class="fas fa-times"></i></span>
+                    `;
+
+                    advancedContainer.appendChild(itemInput);
+
+                    // 添加移除功能
+                    const removeBtn = itemInput.querySelector('.remove-item');
+                    removeBtn.addEventListener('click', function () {
+                        advancedContainer.removeChild(itemInput);
+                    });
+                });
+
+                // 添加卓越物品输入框
+                const addSuperiorBtn = document.getElementById('add-superior');
+                const superiorContainer = document.getElementById('superior-items');
+
+                addSuperiorBtn.addEventListener('click', function () {
+                    if (superiorContainer.children.length >= 6) {
+                        alert('卓越物品最多只能添加6个');
+                        return;
+                    }
+
+                    const itemInput = document.createElement('div');
+                    itemInput.className = 'item-input';
+                    itemInput.innerHTML = `
+                        <input type="number" placeholder="物品价格" min="0" step="0.01">
+                        <span class="remove-item"><i class="fas fa-times"></i></span>
+                    `;
+
+                    superiorContainer.appendChild(itemInput);
+
+                    // 添加移除功能
+                    const removeBtn = itemInput.querySelector('.remove-item');
+                    removeBtn.addEventListener('click', function () {
+                        superiorContainer.removeChild(itemInput);
+                    });
+                });
+
+                // 添加奇异物品输入框
+                const addExceptionalBtn = document.getElementById('add-exceptional');
+                const exceptionalContainer = document.getElementById('exceptional-items');
+
+                addExceptionalBtn.addEventListener('click', function () {
+                    if (exceptionalContainer.children.length >= 3) {
+                        alert('奇异物品最多只能添加3个');
+                        return;
+                    }
+
+                    const itemInput = document.createElement('div');
+                    itemInput.className = 'item-input';
+                    itemInput.innerHTML = `
+                        <input type="number" placeholder="物品价格" min="0" step="0.01">
+                        <span class="remove-item"><i class="fas fa-times"></i></span>
+                    `;
+
+                    exceptionalContainer.appendChild(itemInput);
+
+                    // 添加移除功能
+                    const removeBtn = itemInput.querySelector('.remove-item');
+                    removeBtn.addEventListener('click', function () {
+                        exceptionalContainer.removeChild(itemInput);
+                    });
+                });
+
+                // 添加非凡物品输入框
+                const addExtraordinaryBtn = document.getElementById('add-extraordinary');
+                const extraordinaryContainer = document.getElementById('extraordinary-items');
+
+                addExtraordinaryBtn.addEventListener('click', function () {
+                    if (extraordinaryContainer.children.length >= 2) {
+                        alert('非凡物品最多只能添加2个');
+                        return;
+                    }
+
+                    const itemInput = document.createElement('div');
+                    itemInput.className = 'item-input';
+                    itemInput.innerHTML = `
+                        <input type="number" placeholder="物品价格" min="0" step="0.01">
+                        <span class="remove-item"><i class="fas fa-times"></i></span>
+                    `;
+
+                    extraordinaryContainer.appendChild(itemInput);
+
+                    // 添加移除功能
+                    const removeBtn = itemInput.querySelector('.remove-item');
+                    removeBtn.addEventListener('click', function () {
+                        extraordinaryContainer.removeChild(itemInput);
+                    });
+                });
+            }
+
+            // 保存卡片到localStorage
+            function saveCard(cardData) {
+                let cards = JSON.parse(localStorage.getItem('steamCalculatorCards')) || [];
+                cards.push(cardData);
+                localStorage.setItem('steamCalculatorCards', JSON.stringify(cards));
+                loadCards();
+            }
+
+            // 从localStorage加载卡片
+            function loadCards() {
+                const cardsContainer = document.getElementById('cards-container');
+                const cards = JSON.parse(localStorage.getItem('steamCalculatorCards')) || [];
+
+                cardsContainer.innerHTML = '';
+
+                if (cards.length === 0) {
+                    cardsContainer.innerHTML = '<p>暂无保存的结果</p>';
+                    return;
+                }
+
+                // 按时间倒序排列
+                cards.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                cards.forEach((card, index) => {
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'saved-card';
+
+                    const date = new Date(card.timestamp);
+                    const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+
+                    let content = '';
+
+                    if (card.type === 'balance') {
+                        content = `
+                            <div class="saved-card-header">
+                                <div class="saved-card-title">${card.label}</div>
+                                <button class="delete-card" data-index="${index}"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="saved-card-content">
+                                <p>Steam价格: ${card.steamPrice.toFixed(2)} 元</p>
+                                <p>购买成本: ${card.purchaseCost.toFixed(2)} 元</p>
+                                <p>Steam余额: ${card.steamBalance.toFixed(2)} 元</p>
+                                <p><strong>折扣率: ${card.discountRate}%</strong></p>
+                            </div>
+                            <div class="saved-card-date">${formattedDate}</div>
+                        `;
+                    } else if (card.type === 'lottery') {
+                        content = `
+                            <div class="saved-card-header">
+                                <div class="saved-card-title">${card.label}</div>
+                                <button class="delete-card" data-index="${index}"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="saved-card-content">
+                                <p>期望价值: ${card.expectedValue.toFixed(2)} 元</p>
+                                <p>抽奖成本: ${card.cost.toFixed(2)} 元</p>
+                                <p><strong>收益率: ${card.roi}%</strong></p>
+                            </div>
+                            <div class="saved-card-date">${formattedDate}</div>
+                        `;
+                    }
+
+                    cardElement.innerHTML = content;
+                    cardsContainer.appendChild(cardElement);
+                });
+
+                // 添加删除事件监听器
+                document.querySelectorAll('.delete-card').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        deleteCard(index);
+                    });
+                });
+            }
+
+            // 删除卡片
+            function deleteCard(index) {
+                if (confirm('确定要删除这个记录吗？')) {
+                    let cards = JSON.parse(localStorage.getItem('steamCalculatorCards')) || [];
+                    cards.splice(index, 1);
+                    localStorage.setItem('steamCalculatorCards', JSON.stringify(cards));
+                    loadCards();
+                }
+            }
+
+            // 初始加载保存的卡片
+            loadCards();
+        });
+    </script>
+</body>
+
+</html>
